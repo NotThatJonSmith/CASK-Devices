@@ -1,0 +1,13 @@
+name: CASK-Devices
+apps: []
+build-static-lib: true
+build-shared-lib: true
+dependencies:
+    - name: CASK
+      url: https://github.com/NotThatJonSmith/CASK.git
+      checkout: main
+private-header-paths: []
+public-header-paths:
+    - include/
+source-globs:
+    - src/*
