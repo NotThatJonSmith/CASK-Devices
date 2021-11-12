@@ -34,53 +34,56 @@ private:
     template<typename T>
     T WriteLog(std::string ioFunctionName, char* bytes, T startAddress, T size, T alignBits=4) {
 
-        if constexpr (std::is_same<T, __uint128_t>()) {
+        if (std::is_same<T, __uint128_t>()) {
             (*stream) << "TODO 128-bit logging is not supported" << std::endl;
             return size;
-        } else {
+        }
 
-            (*stream) << ioFunctionName << ":"
-                   << std::hex << std::setfill('0') << std::setw(sizeof(T)*2)
-                   << " start: 0x" << startAddress << " size: 0x" << size << std::endl;
+        (*stream) << ioFunctionName << ":"
+                  << std::hex << std::setfill('0') << std::setw(sizeof(T)*2)
+                  << " start: 0x" << startAddress
+                  << " size: 0x" << size
+                  << std::endl;
 
-            if (!logContents) {
-                return size;
-            }
+        if (!logContents) {
+            return size;
+        }
 
-            (*stream) << "| ";
+        (*stream) << "| ";
 
-            T bytesPerRow = 1 << alignBits;
-            T mask = ~0 << alignBits;
-            T firstRowStartAddress = startAddress & mask;
+        T bytesPerRow = 1 << alignBits;
+        T mask = ~((1 << alignBits) - 1);
+        T firstRowStartAddress = startAddress & mask;
 
-            for (T rowStartAddress = firstRowStartAddress; rowStartAddress < startAddress + size; rowStartAddress += bytesPerRow) {
-                for (T columnIndex = 0; columnIndex < bytesPerRow; columnIndex++) {
+        for (T rowStartAddress = firstRowStartAddress; rowStartAddress < startAddress + size; rowStartAddress += bytesPerRow) {
+            for (T columnIndex = 0; columnIndex < bytesPerRow; columnIndex++) {
 
-                    T rowIndex = (rowStartAddress - firstRowStartAddress) / bytesPerRow;
+                T rowIndex = (rowStartAddress - firstRowStartAddress) / bytesPerRow;
 
-                    if (columnIndex == 0) {
+                if (columnIndex == 0) {
 
-                        if (rowIndex != 0) {
-                            (*stream) << std::endl << "| ";
-                        }
-
-                        (*stream) << std::hex << std::setfill('0') << std::setw(sizeof(T)*2)
-                               << rowStartAddress << ": ";
+                    if (rowIndex != 0) {
+                        (*stream) << std::endl << "| ";
                     }
 
-                    T simAddressOfByte = rowStartAddress + columnIndex;
-                    if (simAddressOfByte < startAddress || simAddressOfByte >= startAddress + size) {
-                        (*stream) << "** ";
-                    } else {
-                        (*stream) << std::hex << std::setfill('0') << std::setw(2)
-                               << ((unsigned int)bytes[simAddressOfByte - startAddress] & 0xff) << " ";
-                    }
+                    (*stream) << std::hex << std::setfill('0')
+                              << std::setw(sizeof(T)*2)
+                              << rowStartAddress << ": ";
+                }
+
+                T simAddressOfByte = rowStartAddress + columnIndex;
+                if (simAddressOfByte < startAddress || simAddressOfByte >= startAddress + size) {
+                    (*stream) << "** ";
+                } else {
+                    (*stream) << std::hex << std::setfill('0') << std::setw(2)
+                              << ((unsigned int)bytes[simAddressOfByte - startAddress] & 0xff)
+                              << " ";
                 }
             }
-            (*stream) << std::endl;
         }
-        return size;
+        (*stream) << std::endl;
     }
+    return size;
 };
 
 } // namespace CASK
