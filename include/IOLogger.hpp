@@ -41,8 +41,8 @@ private:
 
         (*stream) << ioFunctionName << ":"
                   << std::hex << std::setfill('0') << std::setw(sizeof(T)*2)
-                  << " start: 0x" << startAddress
-                  << " size: 0x" << size
+                  << " start: 0x" << (__uint64_t)startAddress
+                  << " size: 0x" << (__uint64_t)size
                   << std::endl;
 
         if (!logContents) {
@@ -68,7 +68,7 @@ private:
 
                     (*stream) << std::hex << std::setfill('0')
                               << std::setw(sizeof(T)*2)
-                              << rowStartAddress << ": ";
+                              << (__uint64_t)rowStartAddress << ": ";
                 }
 
                 T simAddressOfByte = rowStartAddress + columnIndex;
