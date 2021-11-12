@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstring>
 #include <type_traits>
+
 #include <IOTarget.hpp>
 
 namespace CASK {
@@ -81,7 +83,7 @@ private:
         T chunkSize;
         for (T chunkStartAddress = startAddress; chunkStartAddress <= endAddress; chunkStartAddress += chunkSize) {
 
-            T chunkEndAddress = chunkStartAddress & ~0x0000ffff + 0x10000 - 1;
+            T chunkEndAddress = (chunkStartAddress & ~0x0000ffff) + 0x10000 - 1;
             if (chunkEndAddress > endAddress) {
                 chunkEndAddress = endAddress;
             }
