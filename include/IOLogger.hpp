@@ -82,8 +82,8 @@ private:
             }
         }
         (*stream) << std::endl;
+        return size;
     }
-    return size;
 };
 
 } // namespace CASK
