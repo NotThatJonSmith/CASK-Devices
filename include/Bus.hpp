@@ -35,6 +35,18 @@ private:
 
     std::vector<BusMapping> mappings;
 
+    template<typename T, CASK::AccessType accessType>
+    inline T TransactInternal(T startAddress, T size, char* buf) {
+        BusMapping map = GetMatchedMapping<T>(startAddress, size);
+        if constexpr (std::is_same<T, __uint32_t>()) {
+            return map.target->Transact<T, accessType>(startAddress & map.mask.w, size, buf);
+        } else if constexpr (std::is_same<T, __uint32_t>()) {
+            return map.target->Transact<T, accessType>(startAddress & map.mask.dw, size, buf);
+        } else {
+            return map.target->Transact<T, accessType>(startAddress & map.mask.qw, size, buf);
+        }
+    }
+
     template<typename T>
     inline BusMapping GetMatchedMapping(T startAddress, T size) {
         for (BusMapping &map : mappings) {
