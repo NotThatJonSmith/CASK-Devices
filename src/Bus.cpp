@@ -39,31 +39,21 @@ __uint128_t Bus::Fetch128(__uint128_t startAddress, __uint128_t size, char* buf)
 }
 
 void Bus::AddIOTarget32(IOTarget *dev, __uint32_t address, __uint32_t mask) {
-    BusMapping mapping;
-    mapping.addr.qw = 0;
-    mapping.addr.w = address;
-    mapping.mask.qw = 0;
-    mapping.mask.w = mask;
-    mapping.target = dev;
-    mappings.push_back(mapping);
+    AddIOTarget<__uint32_t>(dev, address, mask);
+    AddIOTarget64(dev, address, mask);
 }
 
 void Bus::AddIOTarget64(IOTarget *dev, __uint64_t address, __uint64_t mask) {
-    BusMapping mapping;
-    mapping.addr.qw = 0;
-    mapping.addr.dw = address;
-    mapping.mask.qw = 0;
-    mapping.mask.dw = mask;
-    mapping.target = dev;
-    mappings.push_back(mapping);
+    AddIOTarget<__uint64_t>(dev, address, mask);
+    AddIOTarget128(dev, address, mask);
+    // TODO If the map encroaches on 32b space, add a chopped form to 32b
 }
 
 void Bus::AddIOTarget128(IOTarget *dev, __uint128_t address, __uint128_t mask) {
-    BusMapping mapping;
-    mapping.addr.qw = address;
-    mapping.mask.qw = mask;
-    mapping.target = dev;
-    mappings.push_back(mapping);
+    AddIOTarget<__uint128_t>(dev, address, mask);
+    // TODO If the map encroaches on 64b space, add a chopped form to 64b
+    // (Use the nontemplated call)
+
 }
 
 } // namespace CASK

@@ -6,7 +6,7 @@
 
 namespace CASK {
 
-class Schedule : public Tickable {
+class Schedule final : public Tickable {
 
 public:
 
