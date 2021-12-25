@@ -62,9 +62,9 @@ private:
 
     // TODO be clear about the meaning of size (it's actually size-1 right now for max-int problem)
     template<typename T>
-    inline void AddIOTarget(IOTarget *dev, T address, T size) {
+    inline void AddIOTarget(IOTarget *dev, T address, T sizeMinusOne) {
         T first = address;
-        T last = address + size;
+        T last = address + sizeMinusOne;
         std::vector<BusMapping<T>>* map = AddressMapForWidth<T>();
 
         for (typename std::vector<BusMapping<T>>::iterator other = map->begin(); other != map->end(); other++) {

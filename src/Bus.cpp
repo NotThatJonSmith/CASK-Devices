@@ -38,22 +38,28 @@ __uint128_t Bus::Fetch128(__uint128_t startAddress, __uint128_t size, char* buf)
     return TransactInternal<__uint128_t, AccessType::X>(startAddress, size, buf);
 }
 
-void Bus::AddIOTarget32(IOTarget *dev, __uint32_t address, __uint32_t mask) {
-    AddIOTarget<__uint32_t>(dev, address, mask);
-    AddIOTarget64(dev, address, mask);
+void Bus::AddIOTarget32(IOTarget *dev, __uint32_t address, __uint32_t sizeMinusOne) {
+    AddIOTarget<__uint32_t>(dev, address, sizeMinusOne);
+    AddIOTarget<__uint64_t>(dev, address, sizeMinusOne);
+    AddIOTarget<__uint128_t>(dev, address, sizeMinusOne);
 }
 
-void Bus::AddIOTarget64(IOTarget *dev, __uint64_t address, __uint64_t mask) {
-    AddIOTarget<__uint64_t>(dev, address, mask);
-    AddIOTarget128(dev, address, mask);
-    // TODO If the map encroaches on 32b space, add a chopped form to 32b
+void Bus::AddIOTarget64(IOTarget *dev, __uint64_t address, __uint64_t sizeMinusOne) {
+    if (address < ((__uint64_t)1 << 32)) {
+        AddIOTarget<__uint32_t>(dev, address, 0xffffffff-address);
+    }
+    AddIOTarget<__uint64_t>(dev, address, sizeMinusOne);
+    AddIOTarget<__uint128_t>(dev, address, sizeMinusOne);
 }
 
-void Bus::AddIOTarget128(IOTarget *dev, __uint128_t address, __uint128_t mask) {
-    AddIOTarget<__uint128_t>(dev, address, mask);
-    // TODO If the map encroaches on 64b space, add a chopped form to 64b
-    // (Use the nontemplated call)
-
+void Bus::AddIOTarget128(IOTarget *dev, __uint128_t address, __uint128_t sizeMinusOne) {
+    if (address < ((__uint64_t)1 << 32)) {
+        AddIOTarget<__uint32_t>(dev, address, 0xffffffff-address);
+    }
+    if (address < ((__uint128_t)1 << 64)) {
+        AddIOTarget<__uint64_t>(dev, address, 0xffffffffffffffff-address);
+    }
+    AddIOTarget<__uint128_t>(dev, address, sizeMinusOne);
 }
 
 } // namespace CASK
