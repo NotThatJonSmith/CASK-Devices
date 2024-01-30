@@ -54,7 +54,9 @@ private:
         for (BusMapping<T> &candidate : *AddressMapForWidth<T>()) {
             if (startAddress >= candidate.first && startAddress + size - 1 <= candidate.last ) {
                 T deviceAddress = startAddress - candidate.deviceStart;
-                return candidate.target->template Transact<T, accessType>(deviceAddress, size, buf);
+                T result = candidate.target->template Transact<T, accessType>(deviceAddress, size, buf);
+                hint = candidate.target->hint;
+                return result;
             }
         }
         return 0;

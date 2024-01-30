@@ -72,7 +72,7 @@ private:
         } else {
             memcpy(memStartAddress+startAddress, buf, size);
         }
-
+        hint = memStartAddress+startAddress;
         return size;
     }
 };
